@@ -28,7 +28,6 @@ function drawWheel() {
     const colors = ['#0f3460', '#e94560', '#16213e', '#c84b31', '#1a4a6e', '#b5373a'];
 
     entries.forEach((entry, i) => {
-        // All slices are visually equal regardless of weight
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
@@ -41,7 +40,6 @@ function drawWheel() {
         ctx.lineWidth = 4;
         ctx.stroke();
 
-        // Label
         ctx.save();
         ctx.translate(centerX, centerY);
         ctx.rotate(startAngle + sliceAngle / 2);
@@ -72,12 +70,31 @@ function drawWheel() {
     ctx.fillText("🎡", centerX, centerY);
 }
 
+function showWinnerModal(name, index) {
+    document.getElementById('winner-name').textContent = name;
+    document.getElementById('winner-modal').classList.add('active');
+
+    document.getElementById('modal-remove-btn').onclick = function () {
+        closeModal();
+        entries.splice(index, 1);
+        if (entries.length === 0) {
+            entries = [{ name: "Default Option", weight: 10 }];
+        }
+        renderEntries();
+        drawWheel();
+        document.getElementById('result').textContent = '';
+    };
+}
+
+function closeModal() {
+    document.getElementById('winner-modal').classList.remove('active');
+}
+
 function spin() {
     if (isSpinning || entries.length === 0) return;
     isSpinning = true;
     document.getElementById('result').textContent = '';
 
-    // Weighted random selection (hidden from UI)
     const totalWeight = entries.reduce((sum, e) => sum + e.weight, 0);
     let random = Math.random() * totalWeight;
     let cumulative = 0;
@@ -91,7 +108,6 @@ function spin() {
         }
     }
 
-    // Spin to the visually equal slice for the selected entry
     const sliceAngle = (2 * Math.PI) / entries.length;
     const targetStart = selectedIndex * sliceAngle;
 
@@ -116,8 +132,7 @@ function spin() {
             isSpinning = false;
             currentAngle = targetAngle;
             drawWheel();
-            document.getElementById('result').innerHTML =
-                `🎉 <span style="color:#ffd700">${entries[selectedIndex].name}</span>`;
+            showWinnerModal(entries[selectedIndex].name, selectedIndex);
         }
     }
 
@@ -186,7 +201,6 @@ function renderEntries() {
     container.innerHTML = html;
 }
 
-// Secret: clicking the center hub toggles weight editing mode
 function handleCanvasClick(e) {
     if (isSpinning) return;
     const rect = canvas.getBoundingClientRect();
@@ -210,4 +224,9 @@ window.onload = function () {
     renderEntries();
     drawWheel();
     canvas.addEventListener('click', handleCanvasClick);
+
+    // Close modal when clicking the backdrop
+    document.getElementById('winner-modal').addEventListener('click', function (e) {
+        if (e.target === this) closeModal();
+    });
 };
