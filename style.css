@@ -143,6 +143,106 @@ button {
     background: #e44;
 }
 
+/* Winner Modal */
+.modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-backdrop.active {
+    display: flex;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.modal {
+    background: #1a1a2e;
+    border-radius: 14px;
+    overflow: hidden;
+    width: 90%;
+    max-width: 440px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+    animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+@keyframes popIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+}
+
+.modal-header {
+    background: #27ae60;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    padding: 16px 24px;
+    letter-spacing: 0.02em;
+}
+
+.modal-body {
+    padding: 36px 24px;
+    background: #111;
+}
+
+.winner-name {
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    word-break: break-word;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 20px;
+    background: #1a1a2e;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.modal-btn {
+    padding: 10px 24px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    margin: 0;
+}
+
+.close-btn {
+    background: #2a2a4a;
+    color: #ccc;
+}
+
+.close-btn:hover {
+    background: #3a3a5f;
+    color: #fff;
+}
+
+.remove-btn {
+    background: #e94560;
+    color: #fff;
+}
+
+.remove-btn:hover {
+    background: #ff6b81;
+    transform: translateY(-1px);
+}
+
 footer {
     margin-top: 80px;
     color: #666;
