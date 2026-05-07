@@ -88,7 +88,7 @@ button {
     text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
 }
 
-/* Entry List Styles */
+/* Entry List */
 .entry-item {
     display: flex;
     justify-content: space-between;
