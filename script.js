@@ -68,27 +68,6 @@ function drawWheel() {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("🎡", centerX, centerY);
-
-    // Pointer arrow — tip sits on the wheel rim, body points upward
-    const arrowTip = centerY - radius + 18;   // rests on top of the rim
-    const arrowH   = 42;
-    const arrowW   = 24;
-
-    ctx.shadowColor = 'rgba(0,0,0,0.5)';
-    ctx.shadowBlur  = 6;
-
-    ctx.beginPath();
-    ctx.moveTo(centerX,            arrowTip);            // tip (pointing down)
-    ctx.lineTo(centerX - arrowW,   arrowTip - arrowH);  // top-left
-    ctx.lineTo(centerX + arrowW,   arrowTip - arrowH);  // top-right
-    ctx.closePath();
-
-    ctx.fillStyle   = '#ffd700';
-    ctx.fill();
-    ctx.shadowBlur  = 0;
-    ctx.strokeStyle = '#1a1a2e';
-    ctx.lineWidth   = 3;
-    ctx.stroke();
 }
 
 function showWinnerModal(name, index) {
@@ -116,11 +95,11 @@ function spin() {
     isSpinning = true;
     document.getElementById('result').textContent = '';
 
+    // Weighted random selection
     const totalWeight = entries.reduce((sum, e) => sum + e.weight, 0);
     let random = Math.random() * totalWeight;
     let cumulative = 0;
     let selectedIndex = 0;
-
     for (let i = 0; i < entries.length; i++) {
         cumulative += entries[i].weight;
         if (random <= cumulative) {
@@ -130,10 +109,32 @@ function spin() {
     }
 
     const sliceAngle = (2 * Math.PI) / entries.length;
-    const targetStart = selectedIndex * sliceAngle;
 
-    const extraSpins = 5 + Math.random() * 4;
-    const targetAngle = currentAngle - (extraSpins * 2 * Math.PI) - targetStart - (sliceAngle / 2);
+    // The pointer is at the TOP of the wheel = angle -π/2 in canvas coordinates.
+    // We need: currentAngle + selectedIndex*sliceAngle + sliceAngle/2 ≡ -π/2 (mod 2π)
+    // Solve for the final currentAngle:
+    const pointerAngle = -Math.PI / 2;
+    let finalAngle = pointerAngle - selectedIndex * sliceAngle - sliceAngle / 2;
+
+    // Spin at least 5 full clockwise rotations from currentAngle.
+    // Clockwise means finalAngle < currentAngle, so we subtract 2π until we have enough gap.
+    const minSpins = 5 + Math.floor(Math.random() * 4);
+    // Bring finalAngle to be congruent but below currentAngle by minSpins rotations
+    const diff = currentAngle - finalAngle;
+    const rotationsNeeded = Math.ceil(diff / (2 * Math.PI)) + minSpins;
+    finalAngle = finalAngle + rotationsNeeded * 2 * Math.PI; // now finalAngle ≡ correct (mod 2π)
+    // finalAngle is now above currentAngle, subtract to go the other direction
+    finalAngle -= (rotationsNeeded) * 2 * Math.PI;           // back to below currentAngle
+
+    // Simpler rewrite of the above two lines:
+    // finalAngle should satisfy: finalAngle ≡ target (mod 2π) AND currentAngle - finalAngle ≈ minSpins * 2π
+    // Let's just do it cleanly:
+    const targetMod = ((pointerAngle - selectedIndex * sliceAngle - sliceAngle / 2) % (2 * Math.PI));
+    let targetAngle = targetMod;
+    // Keep subtracting 2π until we're at least minSpins rotations below currentAngle
+    while (currentAngle - targetAngle < minSpins * 2 * Math.PI) {
+        targetAngle -= 2 * Math.PI;
+    }
 
     const duration = 4200;
     const startTime = Date.now();
@@ -142,7 +143,7 @@ function spin() {
     function animate() {
         const elapsed = Date.now() - startTime;
         let progress = Math.min(elapsed / duration, 1);
-        progress = 1 - Math.pow(1 - progress, 3);
+        progress = 1 - Math.pow(1 - progress, 3); // ease-out cubic
 
         currentAngle = startAngle + (targetAngle - startAngle) * progress;
         drawWheel();
@@ -205,7 +206,6 @@ function editWeight(index) {
 function renderEntries() {
     const container = document.getElementById('entryList');
     let html = '';
-
     entries.forEach((entry, i) => {
         html += `
             <div class="entry-item">
@@ -218,7 +218,6 @@ function renderEntries() {
             </div>
         `;
     });
-
     container.innerHTML = html;
 }
 
