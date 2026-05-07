@@ -1,4 +1,4 @@
-// Hidden Weighted Spinner - Equal Visual Slices
+// Wheel Spinner
 let entries = [
     { name: "Option A", weight: 10 },
     { name: "Option B", weight: 20 },
@@ -7,7 +7,7 @@ let entries = [
 
 let currentAngle = 0;
 let isSpinning = false;
-let showWeights = false;   // Secret toggle
+let showWeights = false;  // Secret — toggled by clicking the center hub
 let canvas, ctx, centerX, centerY, radius;
 
 function initCanvas() {
@@ -25,21 +25,23 @@ function drawWheel() {
     const sliceAngle = (2 * Math.PI) / entries.length;
     let startAngle = currentAngle;
 
+    const colors = ['#0f3460', '#e94560', '#16213e', '#c84b31', '#1a4a6e', '#b5373a'];
+
     entries.forEach((entry, i) => {
-        // Draw equal slices
+        // All slices are visually equal regardless of weight
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
         ctx.closePath();
 
-        ctx.fillStyle = i % 2 === 0 ? '#0f3460' : '#e94560';
+        ctx.fillStyle = colors[i % colors.length];
         ctx.fill();
 
         ctx.strokeStyle = '#ffd700';
         ctx.lineWidth = 4;
         ctx.stroke();
 
-        // Text
+        // Label
         ctx.save();
         ctx.translate(centerX, centerY);
         ctx.rotate(startAngle + sliceAngle / 2);
@@ -54,7 +56,7 @@ function drawWheel() {
         startAngle += sliceAngle;
     });
 
-    // Center hub - Secret weight toggle
+    // Center hub (secret toggle target)
     ctx.beginPath();
     ctx.arc(centerX, centerY, 45, 0, 2 * Math.PI);
     ctx.fillStyle = '#ffd700';
@@ -63,7 +65,6 @@ function drawWheel() {
     ctx.lineWidth = 8;
     ctx.stroke();
 
-    // Small center icon
     ctx.fillStyle = '#1a1a2e';
     ctx.font = "bold 28px Arial";
     ctx.textAlign = "center";
@@ -76,6 +77,7 @@ function spin() {
     isSpinning = true;
     document.getElementById('result').textContent = '';
 
+    // Weighted random selection (hidden from UI)
     const totalWeight = entries.reduce((sum, e) => sum + e.weight, 0);
     let random = Math.random() * totalWeight;
     let cumulative = 0;
@@ -89,6 +91,7 @@ function spin() {
         }
     }
 
+    // Spin to the visually equal slice for the selected entry
     const sliceAngle = (2 * Math.PI) / entries.length;
     const targetStart = selectedIndex * sliceAngle;
 
@@ -113,8 +116,7 @@ function spin() {
             isSpinning = false;
             currentAngle = targetAngle;
             drawWheel();
-
-            document.getElementById('result').innerHTML = 
+            document.getElementById('result').innerHTML =
                 `🎉 <span style="color:#ffd700">${entries[selectedIndex].name}</span>`;
         }
     }
@@ -125,8 +127,7 @@ function spin() {
 function addEntry() {
     const name = prompt("Enter option name:", "New Option");
     if (!name || name.trim() === "") return;
-
-    entries.push({ name: name.trim(), weight: 10 }); // Default weight
+    entries.push({ name: name.trim(), weight: 10 });
     renderEntries();
     drawWheel();
 }
@@ -142,9 +143,22 @@ function removeEntry(index) {
     }
 }
 
+function resetEntries() {
+    if (confirm("Reset all options to defaults?")) {
+        entries = [
+            { name: "Option A", weight: 10 },
+            { name: "Option B", weight: 20 },
+            { name: "Option C", weight: 15 }
+        ];
+        renderEntries();
+        drawWheel();
+        document.getElementById('result').textContent = '';
+    }
+}
+
 function editWeight(index) {
     if (!showWeights) return;
-    const newWeight = parseInt(prompt(`New weight for "${entries[index].name}":`, entries[index].weight));
+    const newWeight = parseInt(prompt(`Weight for "${entries[index].name}":`, entries[index].weight));
     if (!isNaN(newWeight) && newWeight > 0) {
         entries[index].weight = newWeight;
         renderEntries();
@@ -172,38 +186,28 @@ function renderEntries() {
     container.innerHTML = html;
 }
 
-// Toggle weight editing mode by clicking the center 🎡
-function toggleWeightMode(e) {
+// Secret: clicking the center hub toggles weight editing mode
+function handleCanvasClick(e) {
+    if (isSpinning) return;
     const rect = canvas.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickY = e.clientY - rect.top;
-    
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clickX = (e.clientX - rect.left) * scaleX;
+    const clickY = (e.clientY - rect.top) * scaleY;
     const dist = Math.hypot(clickX - centerX, clickY - centerY);
-    
-    if (dist < 50) {  // Clicked near center
+
+    if (dist < 50) {
         showWeights = !showWeights;
         renderEntries();
         drawWheel();
+    } else {
+        spin();
     }
 }
 
-// Initialize
-window.onload = function() {
+window.onload = function () {
     initCanvas();
     renderEntries();
     drawWheel();
-
-    // Click wheel to spin (except center)
-    canvas.addEventListener('click', (e) => {
-        if (isSpinning) return;
-        const rect = canvas.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const clickY = e.clientY - rect.top;
-        
-        if (Math.hypot(clickX - centerX, clickY - centerY) < 50) {
-            toggleWeightMode(e);
-        } else {
-            spin();
-        }
-    });
+    canvas.addEventListener('click', handleCanvasClick);
 };
