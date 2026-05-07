@@ -68,6 +68,23 @@ function drawWheel() {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("🎡", centerX, centerY);
+
+    // Pointer arrow at the top
+    const arrowTip  = centerY - radius - 10;  // just outside the wheel rim
+    const arrowH    = 36;
+    const arrowW    = 22;
+
+    ctx.beginPath();
+    ctx.moveTo(centerX,          arrowTip);           // tip (pointing down into wheel)
+    ctx.lineTo(centerX - arrowW, arrowTip - arrowH);  // top-left
+    ctx.lineTo(centerX + arrowW, arrowTip - arrowH);  // top-right
+    ctx.closePath();
+
+    ctx.fillStyle = '#ffd700';
+    ctx.fill();
+    ctx.strokeStyle = '#1a1a2e';
+    ctx.lineWidth = 3;
+    ctx.stroke();
 }
 
 function showWinnerModal(name, index) {
@@ -225,7 +242,6 @@ window.onload = function () {
     drawWheel();
     canvas.addEventListener('click', handleCanvasClick);
 
-    // Close modal when clicking the backdrop
     document.getElementById('winner-modal').addEventListener('click', function (e) {
         if (e.target === this) closeModal();
     });
