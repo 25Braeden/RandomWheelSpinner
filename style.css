@@ -29,12 +29,36 @@ header h1 {
     margin-bottom: 30px;
 }
 
+/* Wrapper holds canvas + pointer arrow together */
+.wheel-wrapper {
+    position: relative;
+    display: inline-block;
+    line-height: 0; /* removes gap under canvas */
+}
+
+/* Downward-pointing triangle sitting on the top rim */
+.wheel-pointer {
+    position: absolute;
+    top: -2px;           /* overlap the yellow border slightly */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 44px solid #ffd700;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.7));
+    z-index: 10;
+    pointer-events: none;
+}
+
 canvas {
     border: 14px solid #ffd700;
     border-radius: 50%;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
     background: #111;
     cursor: pointer;
+    display: block;
 }
 
 .controls {
