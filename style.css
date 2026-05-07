@@ -1,4 +1,7 @@
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     font-family: 'Segoe UI', system-ui, sans-serif;
@@ -7,60 +10,152 @@ body {
     min-height: 100vh;
     text-align: center;
 }
+
 .container {
     max-width: 620px;
     margin: 40px auto;
     padding: 20px;
 }
+
 header h1 {
     font-size: 2.8rem;
     margin: 0 0 8px 0;
+    font-weight: 700;
 }
+
 .subtitle {
     color: #aaa;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
+    margin-bottom: 30px;
 }
+
 canvas {
     border: 14px solid #ffd700;
     border-radius: 50%;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
     background: #111;
+    cursor: pointer;
 }
+
 .controls {
-    margin: 25px 0;
+    margin: 30px 0;
 }
+
 button {
     padding: 12px 24px;
     margin: 6px;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     border: none;
     border-radius: 50px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
 }
+
 .spin-btn {
     background: #e94560;
     color: white;
     font-weight: bold;
-    padding: 16px 48px;
-    font-size: 1.4rem;
+    padding: 16px 52px;
+    font-size: 1.45rem;
+    box-shadow: 0 8px 20px rgba(233, 69, 96, 0.4);
 }
-.spin-btn:hover { background: #ff6b81; transform: scale(1.05); }
+
+.spin-btn:hover {
+    background: #ff6b81;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(233, 69, 96, 0.5);
+}
+
 .entries-panel {
     text-align: left;
-    background: rgba(255,255,255,0.08);
-    padding: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 24px;
     border-radius: 16px;
     margin-top: 30px;
+    border: 1px solid rgba(255, 215, 0, 0.1);
 }
+
+.entries-panel h3 {
+    margin-top: 0;
+    color: #ffd700;
+}
+
 .result {
-    font-size: 2.2rem;
-    min-height: 70px;
-    margin: 20px 0;
+    font-size: 2.4rem;
+    min-height: 80px;
+    margin: 25px 0;
     font-weight: bold;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
 }
+
+/* Entry List Styles */
+.entry-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.06);
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+
+.entry-item:hover {
+    background: rgba(255,255,255,0.12);
+}
+
+.entry-name {
+    font-size: 1.1rem;
+    flex: 1;
+}
+
+.entry-weight {
+    color: #aaa;
+    font-size: 0.95rem;
+    margin-right: 15px;
+}
+
+.entry-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.small-btn {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    background: #1e2a4a;
+    color: #ddd;
+    border: none;
+    cursor: pointer;
+}
+
+.small-btn:hover {
+    background: #2a3a5f;
+}
+
+.delete-btn {
+    background: #c33;
+    color: white;
+}
+
+.delete-btn:hover {
+    background: #e44;
+}
+
 footer {
-    margin-top: 60px;
+    margin-top: 80px;
     color: #666;
     font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    canvas {
+        width: 320px;
+        height: 320px;
+    }
+    header h1 {
+        font-size: 2.2rem;
+    }
 }
