@@ -69,21 +69,25 @@ function drawWheel() {
     ctx.textBaseline = "middle";
     ctx.fillText("🎡", centerX, centerY);
 
-    // Pointer arrow at the top
-    const arrowTip  = centerY - radius - 10;  // just outside the wheel rim
-    const arrowH    = 36;
-    const arrowW    = 22;
+    // Pointer arrow — tip sits on the wheel rim, body points upward
+    const arrowTip = centerY - radius + 18;   // rests on top of the rim
+    const arrowH   = 42;
+    const arrowW   = 24;
+
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur  = 6;
 
     ctx.beginPath();
-    ctx.moveTo(centerX,          arrowTip);           // tip (pointing down into wheel)
-    ctx.lineTo(centerX - arrowW, arrowTip - arrowH);  // top-left
-    ctx.lineTo(centerX + arrowW, arrowTip - arrowH);  // top-right
+    ctx.moveTo(centerX,            arrowTip);            // tip (pointing down)
+    ctx.lineTo(centerX - arrowW,   arrowTip - arrowH);  // top-left
+    ctx.lineTo(centerX + arrowW,   arrowTip - arrowH);  // top-right
     ctx.closePath();
 
-    ctx.fillStyle = '#ffd700';
+    ctx.fillStyle   = '#ffd700';
     ctx.fill();
+    ctx.shadowBlur  = 0;
     ctx.strokeStyle = '#1a1a2e';
-    ctx.lineWidth = 3;
+    ctx.lineWidth   = 3;
     ctx.stroke();
 }
 
